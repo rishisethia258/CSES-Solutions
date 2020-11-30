@@ -43,30 +43,40 @@ const ll mod1 =    1000000007;
 const ll mod2 =    998244353;
 const ll infi =    1e18;
 
+struct project {
+    ll start;
+    ll finish;
+    ll money;
+};
+
+bool compare(project a, project b) {
+    return (a.finish < b.finish); 
+}
 
 void solve() {
     ll n;
     cin >> n;
-    string s[n];
-    fr(i,0,n) cin >> s[i];
-    vvll dp(n,vll(n,0));
-    if(s[0][0] != '*') {
-        dp[0][0] = 1;    
-    } 
+    struct project a[n];
     fr(i,0,n) {
-        fr(j,0,n) {
-            if(s[i][j] == '*') {
-                continue;
-            }
-            if(i != 0) {
-                (dp[i][j] += dp[i-1][j]) %= mod1;
-            }
-            if(j != 0) {
-                (dp[i][j] += dp[i][j-1]) %= mod1;
-            }
-        }
+        cin >> a[i].start;
+        cin >> a[i].finish;
+        cin >> a[i].money;
     }
-    cout << dp[n-1][n-1] << endl;
+    sort(a,a+n,compare);
+    vll dp(n);
+    omultiset<ll> fin;
+    dp[0] = a[0].money;
+    fin.insert(a[0].finish);
+    fr(i,1,n) {
+        ll s = fin.order_of_key(a[i].start) - 1;
+        if(s == -1) {
+            dp[i] = max(dp[i-1], a[i].money);
+        } else {
+            dp[i] = max(dp[i-1], a[i].money + dp[s]);
+        }
+        fin.insert(a[i].finish);
+    }
+    cout << dp[n-1] << endl;
 }
 
 int main() {
@@ -76,7 +86,7 @@ int main() {
     #endif
     ios_base::sync_with_stdio(false);
     cin.tie(NULL); cout.tie(NULL);
-    ll t = 1;
+    ll t = 1; 
     while(t--) solve();
     return 0;
 }
